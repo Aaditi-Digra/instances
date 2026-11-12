@@ -11,6 +11,7 @@ resource "aws_instance" "my_vm" {
      ami = "ami-05fbd65e334e88c16"
      subnet_id = data.terraform_remote_state.network_details.outputs.my_subnet
      instance_type = "t8i.small"
+     key_name = data.terraform_remote_state.network_details.outputs.key_name
      tags = {
             Name = "student.59-vm1"
  }
