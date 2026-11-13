@@ -16,6 +16,19 @@ module "webserver" {
   key_name               = data.terraform_remote_state.network_details.outputs.key_name
   vpc_security_group_ids = data.terraform_remote_state.network_details.outputs.security_group_id_array
   tags = {
-    Name = "student.59-vm"
+    Name = "student.59-webserver-vm"
   }
+}
+
+module "loadbalancer" {
+   source = "./modules/linux_node"
+   instance_count = "1"
+   ami = "ami-04b0b8ee9ce90920a"
+   instance_type = "t8i.small"
+   key_name = data.terraform_remote_state.network_details.outputs.key_name
+   subnet_id = data.terraform_remote_state.network_details.outputs.my_subnet
+   vpc_security_group_ids = data.terraform_remote_state.network_details.outputs.security_group_id_array
+    tags = {
+       Name = "student.59-loadbalancer-vm"
+   }
 }
