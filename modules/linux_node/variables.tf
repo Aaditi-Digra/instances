@@ -13,3 +13,7 @@ variable "ami" {}
 variable "tags" {}
 
 variable "instance_count" {}
+
+variable "install_package" {}
+
+variable "playbook_name" {}

@@ -10,25 +10,32 @@ data "terraform_remote_state" "network_details" {
 module "webserver" {
   source = "./modules/linux_node"
   ami                    = "ami-04b0b8ee9ce90920a"
-  instance_count = "1"
+  instance_count = 1
   subnet_id              = data.terraform_remote_state.network_details.outputs.my_subnet
   instance_type          = "t8i.small"
   key_name               = data.terraform_remote_state.network_details.outputs.key_name
   vpc_security_group_ids = data.terraform_remote_state.network_details.outputs.security_group_id_array
   tags = {
-    Name = "student.59-webserver-vm"
+    Name = var.webserver_prefix
   }
+  install_package = "webservers"
+  playbook_name = "install-apache.yml"
 }
 
 module "loadbalancer" {
    source = "./modules/linux_node"
-   instance_count = "1"
+   instance_count = 1
    ami = "ami-04b0b8ee9ce90920a"
    instance_type = "t8i.small"
    key_name = data.terraform_remote_state.network_details.outputs.key_name
    subnet_id = data.terraform_remote_state.network_details.outputs.my_subnet
    vpc_security_group_ids = data.terraform_remote_state.network_details.outputs.security_group_id_array
-    tags = {
-       Name = "student.59-loadbalancer-vm"
-   }
+   
+   tags = {
+       Name = var.loadbalancer_prefix
+   } 
+
+install_package = "loadbalancer"
+playbook_name = "install-ha-proxy.yaml"
+depends_on = [module.webserver]
 }

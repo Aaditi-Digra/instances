@@ -33,3 +33,13 @@ variable "vm_name" {
   type        = string
   default     = "student.59-vm1"
 }
+
+variable "webserver_prefix" {
+  type    = string
+  default = "webserver"
+}
+
+variable "loadbalancer_prefix" {
+  type = string
+  default = "loadbalancer"
+}
