@@ -43,3 +43,7 @@ variable "loadbalancer_prefix" {
   type = string
   default = "loadbalancer"
 }
+
+variable "web_docker_host_prefix" {
+  default = "student.59-docker-vm"
+}
