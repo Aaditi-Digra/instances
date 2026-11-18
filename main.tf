@@ -22,9 +22,25 @@ module "webserver" {
   playbook_name = "install-apache.yml"
 }
 
+module "loadbalancer" {
+ source = "./modules/linux_node"
+ ami = "ami-04b0b8ee9ce90920a"
+ instance_type = "t8i.small"
+ instance_count = 0
+ subnet_id = data.terraform_remote_state.network_details.outputs.my_subnet
+ key_name = data.terraform_remote_state.network_details.outputs.key_name
+ vpc_security_group_ids = data.terraform_remote_state.network_details.outputs.security_group_id_array
+ tags = {
+    Name = var.loadbalancer_prefix
+}
+    install_package = "loadbalancer"
+    playbook_name = "install-ha-proxy.yaml"
+    depends_on = [module.webserver]
+}
+
 module "web_docker_host" {
    source = "./modules/linux_node"
-   instance_count = 1
+   instance_count = 3
    ami = "ami-04b0b8ee9ce90920a"
    instance_type = "t8i.small"
    key_name = data.terraform_remote_state.network_details.outputs.key_name
@@ -37,4 +53,20 @@ module "web_docker_host" {
 
 install_package = "dockerhost"
 playbook_name = "install-docker.yaml"
+}
+
+module "lb_docker_host"{
+  source = "./modules/linux_node"
+  ami = "ami-04b0b8ee9ce90920a"
+  instance_type = "t8i.small"
+  instance_count = 1
+  subnet_id = data.terraform_remote_state.network_details.outputs.my_subnet
+  key_name = data.terraform_remote_state.network_details.outputs.key_name
+  vpc_security_group_ids = data.terraform_remote_state.network_details.outputs.security_group_id_array
+  tags = {
+     Name = var.lb_docker_host_prefix
+}
+     install_package = "loadbalancer_docker"
+     playbook_name = "install-lb-docker-host.yaml"
+     depends_on = [module.web_docker_host]
 }
