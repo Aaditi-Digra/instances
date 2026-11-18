@@ -12,3 +12,7 @@ value = module.web_docker_host.*.public_ip
 output "lb_docker_host_public_ip" {
 value = module.lb_docker_host.*.public_ip
 }
+
+output "jenkins_master_public_ip" {
+value = module.jenkins_master.*.public_ip
+}

@@ -40,7 +40,7 @@ module "loadbalancer" {
 
 module "web_docker_host" {
    source = "./modules/linux_node"
-   instance_count = 3
+   instance_count = 0
    ami = "ami-04b0b8ee9ce90920a"
    instance_type = "t8i.small"
    key_name = data.terraform_remote_state.network_details.outputs.key_name
@@ -59,7 +59,7 @@ module "lb_docker_host"{
   source = "./modules/linux_node"
   ami = "ami-04b0b8ee9ce90920a"
   instance_type = "t8i.small"
-  instance_count = 1
+  instance_count = 0
   subnet_id = data.terraform_remote_state.network_details.outputs.my_subnet
   key_name = data.terraform_remote_state.network_details.outputs.key_name
   vpc_security_group_ids = data.terraform_remote_state.network_details.outputs.security_group_id_array
@@ -69,4 +69,19 @@ module "lb_docker_host"{
      install_package = "loadbalancer_docker"
      playbook_name = "install-lb-docker-host.yaml"
      depends_on = [module.web_docker_host]
+}
+
+module "jenkins_master" {
+  source = "./modules/linux_node"
+  instance_count = 1
+  ami = "ami-04b0b8ee9ce90920a"
+  instance_type = "t8i.small"
+  key_name = data.terraform_remote_state.network_details.outputs.key_name
+  subnet_id = data.terraform_remote_state.network_details.outputs.my_subnet
+  vpc_security_group_ids = data.terraform_remote_state.network_details.outputs.security_group_id_array
+  tags = {
+     Name = var.jenkins_master_prefix
+  }
+     install_package = "jenkins"
+     playbook_name = "install-jenkins-master.yaml"
 }
